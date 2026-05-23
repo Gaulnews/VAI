@@ -4,11 +4,12 @@ const nextConfig = {
     serverComponentsExternalPackages: ['pdf-parse', 'llamaindex'],
   },
   serverExternalPackages: ['pdf-parse', 'llamaindex'],
-  api: {
-    bodyParser: {
-      sizeLimit: '50mb',
-    },
-    responseLimit: '50mb',
+  images: {
+    remotePatterns: [
+      { protocol: 'https', hostname: 'drive.google.com' },
+      { protocol: 'https', hostname: '*.googleusercontent.com' },
+      { protocol: 'https', hostname: '*.r2.cloudflarestorage.com' },
+    ],
   },
 };
 
