@@ -5,8 +5,13 @@ import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 let _sql: NeonQueryFunction<false, false> | null = null;
 function getSql(): NeonQueryFunction<false, false> {
   if (_sql) return _sql;
-  const url = process.env.DATABASE_URL_TREINOS || process.env.DATABASE_URL || '';
-  if (!url) throw new Error('DATABASE_URL_TREINOS or DATABASE_URL must be set');
+  const url =
+    process.env.NEON_TREINOS_URL ||
+    process.env.NEON_DATABASE_URL ||
+    process.env.DATABASE_URL_TREINOS ||
+    process.env.DATABASE_URL ||
+    '';
+  if (!url) throw new Error('NEON_TREINOS_URL, NEON_DATABASE_URL, DATABASE_URL_TREINOS, or DATABASE_URL must be set');
   _sql = neon(url);
   return _sql;
 }
