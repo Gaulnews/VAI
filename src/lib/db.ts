@@ -1,8 +1,26 @@
-import { neon } from '@neondatabase/serverless';
+import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 
-const DATABASE_URL = process.env.DATABASE_URL_TREINOS || process.env.DATABASE_URL || '';
+// Lazy init: only construct neon() at runtime to avoid build-time failures
+// when env vars are absent during `next build`'s page data collection.
+let _sql: NeonQueryFunction<false, false> | null = null;
+function getSql(): NeonQueryFunction<false, false> {
+  if (_sql) return _sql;
+  const url = process.env.DATABASE_URL_TREINOS || process.env.DATABASE_URL || '';
+  if (!url) throw new Error('DATABASE_URL_TREINOS or DATABASE_URL must be set');
+  _sql = neon(url);
+  return _sql;
+}
 
-export const sql = neon(DATABASE_URL);
+export const sql: NeonQueryFunction<false, false> = new Proxy((() => {}) as unknown as NeonQueryFunction<false, false>, {
+  apply(_t, _this, args) {
+    // @ts-expect-error - forward tagged-template args
+    return getSql()(...args);
+  },
+  get(_t, prop) {
+    // @ts-expect-error - forward property access (transaction, etc.)
+    return getSql()[prop];
+  },
+}) as NeonQueryFunction<false, false>;
 
 export async function initDB() {
   await sql`

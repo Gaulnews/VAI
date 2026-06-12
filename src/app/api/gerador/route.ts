@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       `;
     }
 
-    const sessaoExercicios = exercicios.map((ex: { id: number; nome: string; nome_personalizado?: string; grupo_muscular: string; video_url?: string; gif_url?: string }) => ({
+    const sessaoExercicios = (exercicios as any[]).map((ex) => ({
       exercicio_id: ex.id,
       nome: ex.nome_personalizado || ex.nome,
       grupo_muscular: ex.grupo_muscular,
